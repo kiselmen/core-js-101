@@ -1,3 +1,4 @@
+return
 const assert = require('assert');
 const tasks = require('../src/06-promises-tasks');
 it.optional = require('../extensions/it-optional');
