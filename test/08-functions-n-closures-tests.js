@@ -1,4 +1,3 @@
-return
 const assert = require('assert');
 const tasks = require('../src/08-functions-n-closures-tasks');
 it.optional = require('../extensions/it-optional');
