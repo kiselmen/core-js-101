@@ -114,12 +114,11 @@ function timeSpanToString(startDate, endDate) {
 function angleBetweenClockHands(date) {
   // throw new Error('Not implemented');
   const hours = (date.getUTCHours() > 12) ? date.getUTCHours() - 12 : date.getUTCHours();
-
-  let degrees = (hours % 12 || 12) * 30 - date.getUTCMinutes() * 6;
+  const hoursInMinutes = hours * 60 + date.getUTCMinutes();
+  let degrees = hoursInMinutes * 0.5 - date.getUTCMinutes() * 6;
   degrees = (degrees === 360) ? 0 : degrees;
   degrees = (degrees > 180) ? degrees - 180 : degrees;
-  // degrees = (degrees < 0) ? 180 - degrees : degrees;
-  const radian = (degrees / 180) * Math.PI;
+  const radian = Math.abs((degrees / 180) * Math.PI);
   return radian;
 }
 
