@@ -121,32 +121,100 @@ function fromJSON(proto, json) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  errorDuplicate: 'Element, id and pseudo-element should not occur more then one time inside the selector',
+  errorOrder: 'Selector parts should be arranged in the following order: element, id, class, attribute, pseudo-class, pseudo-element',
+  order: [],
+
+  checkorder() {
+    const countEl = this.order.filter((item) => item === 1).length;
+    const countId = this.order.filter((item) => item === 2).length;
+    const countPs = this.order.filter((item) => item === 6).length;
+    if (countEl > 1 || countId > 1 || countPs > 1) {
+      throw new Error(this.errorDuplicate);
+    }
+    const sorted = [...this.order];
+    sorted.sort((a, b) => a - b);
+    sorted.forEach((item, index) => {
+      if (item !== this.order[index]) {
+        throw new Error(this.errorOrder);
+      }
+    });
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  element(value) {
+    // throw new Error('Not implemented');
+    const instance = { ...this };
+    instance.order = [...this.order, 1];
+    instance.elementVal = instance.elementVal ? instance.elementVal + value : value;
+    instance.checkorder();
+    return instance;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    // throw new Error('Not implemented');
+    const instance = { ...this };
+    instance.order = [...this.order, 2];
+    instance.idVal = instance.idVal ? `${instance.idVal}#${value}` : `#${value}`;
+    instance.checkorder();
+    return instance;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    // throw new Error('Not implemented');
+    const instance = { ...this };
+    instance.order = [...this.order, 3];
+    instance.classVal = instance.classVal ? `${instance.classVal}.${value}` : `.${value}`;
+    instance.checkorder();
+    return instance;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    // throw new Error('Not implemented');
+    const instance = { ...this };
+    instance.order = [...this.order, 4];
+    instance.attrVal = instance.attrVal ? `${instance.attrVal}[${value}]` : `[${value}]`;
+    instance.checkorder();
+    return instance;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    // throw new Error('Not implemented');
+    const instance = { ...this };
+    instance.order = [...this.order, 5];
+    instance.pseudoClassVal = instance.pseudoClassVal ? `${instance.pseudoClassVal}:${value}` : `:${value}`;
+    instance.checkorder();
+    return instance;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    // throw new Error('Not implemented');
+    const instance = { ...this };
+    instance.order = [...this.order, 6];
+    instance.pseudoElementVal = instance.pseudoElementVal ? `${instance.pseudoElementVal}::${value}` : `::${value}`;
+    instance.checkorder();
+    return instance;
+  },
+
+  combine(selector1, combinator, selector2) {
+    // throw new Error('Not implemented');
+    const instance = { ...this };
+    const newValue = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    instance.value = instance.value ? instance.value + newValue : newValue;
+    return instance;
+  },
+
+  stringify() {
+    if (this.value) {
+      return this.value;
+    }
+    let value = '';
+    if (this.elementVal) value += this.elementVal;
+    if (this.idVal) value += this.idVal;
+    if (this.classVal) value += this.classVal;
+    if (this.attrVal) value += this.attrVal;
+    if (this.pseudoClassVal) value += this.pseudoClassVal;
+    if (this.pseudoElementVal) value += this.pseudoElementVal;
+    return value;
   },
 };
 
