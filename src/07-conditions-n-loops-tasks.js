@@ -279,8 +279,22 @@ function reverseInteger(num) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(ccn) {
+  return !(ccn
+    .toString()
+    .split('')
+    .reverse()
+    .map((item) => +item)
+    .map((item, index) => {
+      let result = item;
+      if (index % 2 !== 0) {
+        const newItem = item * 2;
+        result = (newItem > 9) ? newItem - 9 : newItem;
+      }
+      return result;
+    })
+    .reduce((acum, curr) => acum + curr) % 10
+  );
 }
 
 /**
@@ -325,8 +339,22 @@ function getDigitalRoot(num) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  // throw new Error('Not implemented');
+  const brackets = ['[]', '{}', '()', '<>'];
+  let s = str;
+  let isAnalyzeNeed = true;
+  while (isAnalyzeNeed) {
+    isAnalyzeNeed = false;
+    // eslint-disable-next-line no-loop-func
+    brackets.forEach((item) => {
+      if (s.indexOf(item) >= 0) {
+        isAnalyzeNeed = true;
+        s = s.split(item).join('');
+      }
+    });
+  }
+  return s.length === 0;
 }
 
 
@@ -368,8 +396,26 @@ function toNaryString(num, n) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  // throw new Error('Not implemented');
+  const parsed = pathes.map((item) => item.split('/'));
+  const lengths = parsed.map((item) => item.length);
+  const min = Math.min(...lengths);
+  const filtered = [...Array(min).keys()].map((item, index) => {
+    let newItem = [];
+    parsed.forEach((elem) => {
+      elem.forEach((text, i) => {
+        if (i === index) newItem.push(text);
+      });
+    });
+    let count = 1;
+    newItem.forEach((elem) => {
+      if (elem !== newItem[0]) count += 1;
+    });
+    newItem = count === 1 ? { text: `${newItem[0]}/`, isInclude: true } : { text: '', isInclude: false };
+    return newItem;
+  });
+  return filtered.filter((item) => item.isInclude === true).map((item) => item.text).join('');
 }
 
 
@@ -391,8 +437,20 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  // throw new Error('Not implemented');
+  const result = [];
+  m1.forEach((_, index) => { result[index] = []; });
+
+  for (let column = 0; column < m1.length; column += 1) {
+    for (let row = 0; row < m1.length; row += 1) {
+      let item = 0;
+      for (let k = 0; k < m2.length; k += 1) item += m1[row][k] * m2[k][column];
+
+      result[row][column] = item;
+    }
+  }
+  return result;
 }
 
 
@@ -426,8 +484,18 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  // throw new Error('Not implemented');
+  const lines = [];
+  position.forEach((item, index) => {
+    lines.push(item);
+    const vLine = [position[0][index], position[1][index], position[2][index]];
+    lines.push(vLine);
+  });
+  lines.push([position[0][0], position[1][1], position[2][2]]);
+  lines.push([position[0][2], position[1][1], position[2][0]]);
+  const filtered = lines.map((i) => (i[0] !== undefined && i[0] === i[1] && i[1] === i[2] ? { w: i[0], isW: true } : { w: '', isW: false })).filter((item) => item.isW === true);
+  return filtered.length > 0 ? filtered[0].w : undefined;
 }
 
 
